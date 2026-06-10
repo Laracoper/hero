@@ -1,0 +1,16 @@
+{
+    "name": "laracoper/docker-compose-hero",
+    "description": "Красивый CLI-визуализатор сетей и инспектор портов для Docker Compose",
+    "type": "project",
+    "license": "MIT",
+    "bin": ["hero.php"],
+    "autoload": {
+        "psr-4": {
+            "ComposerHero\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.0",
+        "symfony/yaml": "^6.0 || ^7.0"
+    }
+}
