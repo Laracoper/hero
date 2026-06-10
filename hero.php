@@ -1,31 +1,53 @@
 #!/usr/bin/env php
 <?php
 
-// Подключаем автозагрузку зависимостей Symfony и наших классов [INDEX]
 require __DIR__ . '/vendor/autoload.php';
 
 use ComposerHero\Parser;
 use ComposerHero\PortChecker;
 use ComposerHero\Renderer;
 
-// Инициализируем наши модули [INDEX]
 $parser = new Parser();
 $portChecker = new PortChecker();
 $renderer = new Renderer();
 
-// Ищем docker-compose.yml в текущей папке, где пользователь запустил команду
-$composeFile = getcwd() . '/docker-compose.yml'; 
+// 1. УМНЫЙ АЛГОРИТМ ПОИСКА ФАЙЛА ВВЕРХ ПО ДИРЕКТОРИЯМ
+$currentDir = getcwd();
+$composeFile = null;
 
-if (!file_exists($composeFile)) {
-    echo "\033[0;31m❌ Ошибка: Файл docker-compose.yml не найден в текущей папке!\033[0m\n";
+// Мы будем подниматься вверх максимум 5 раз, чтобы не уйти в корень всей ОС Linux
+for ($i = 0; $i < 5; $i++) {
+    $targetFile = $currentDir . '/docker-compose.yml';
+    
+    if (file_exists($targetFile)) {
+        $composeFile = $targetFile;
+        break; // Ура! Файл найден, выходим из цикла
+    }
+    
+    // Поднимаемся на один уровень выше (например, из /hi-d/laravel-app в /hi-d)
+    $parentDir = dirname($currentDir);
+    
+    // Если выше подняться уже физически нельзя (дошли до корня системы /)
+    if ($parentDir === $currentDir) {
+        break;
+    }
+    $currentDir = $parentDir;
+}
+
+// Если файл так и не нашли
+if (!$composeFile) {
+    echo "\033[0;31m❌ Ошибка: Файл docker-compose.yml не найден ни в текущей папке, ни в папках выше!\033[0m\n";
     exit(1);
 }
 
-// 1. Парсим файл [INDEX]
+// Информируем пользователя, где именно мы нашли файл конфигурации
+echo "\033[0;34m🔍 Найдена конфигурация: " . $composeFile . "\033[0m\n";
+
+// 2. Парсим файл
 $services = $parser->parse($composeFile);
 
 if ($services === false) {
-    echo "\033[0;31m❌ Ошибка: Не удалось прочесть файл. Проверьте синтаксис (пробелы и отступы) в конфигурации YAML.\033[0m\n";
+    echo "\033[0;31m❌ Ошибка: Не удалось прочесть файл. Проверьте синтаксис YAML.\033[0m\n";
     exit(1);
 }
 
@@ -34,9 +56,9 @@ if (empty($services)) {
     exit(0);
 }
 
-// 2. Рисуем сетевую карту [INDEX]
+// 3. Рисуем сетевую карту
 $renderer->renderMap($services);
 
-// 3. Инспектируем порты хоста [INDEX]
+// 4. Инспектируем порты хоста
 $conflicts = $portChecker->checkPorts($services);
 $renderer->renderConflicts($conflicts);
