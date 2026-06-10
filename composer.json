@@ -3,7 +3,7 @@
     "description": "Красивый CLI-визуализатор сетей и инспектор портов для Docker Compose",
     "type": "project",
     "license": "MIT",
-    "bin": ["hero.php"],
+    "bin": ["hero"],
     "autoload": {
         "psr-4": {
             "ComposerHero\\": "src/"
