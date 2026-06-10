@@ -1,12 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-// УНИВЕРСАЛЬНОЕ ПОДКЛЮЧЕНИЕ АВТОЗАГРУЗКИ [INDEX]
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
-    // Режим разработки: если запускаем локально в папке самого пакета [INDEX]
     require __DIR__ . '/vendor/autoload.php';
 } elseif (file_exists(__DIR__ . '/../../autoload.php')) {
-    // Боевой режим: если пакет скачан через Composer в чужой проект (поднимаемся на 2 уровня вверх) [INDEX]
     require __DIR__ . '/../../autoload.php';
 } else {
     echo "\033[0;31m❌ Ошибка: Не удалось найти автозагрузку Composer!\033[0m\n";
