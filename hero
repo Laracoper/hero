@@ -21,15 +21,15 @@ $renderer = new Renderer();
 $currentDir = getcwd();
 $composeFile = null;
 
-// Список возможных имен конфигурационных файлов докера [2]
-$possibleNames = ['docker-compose.yml', 'docker-compose.yaml', 'compose.yml', 'compose.yaml']; [2]
+// Список возможных имен конфигурационных файлов докера
+$possibleNames = ['docker-compose.yml', 'docker-compose.yaml', 'compose.yml', 'compose.yaml'];
 
 for ($i = 0; $i < 5; $i++) {
     foreach ($possibleNames as $name) {
         $targetFile = $currentDir . '/' . $name;
         if (file_exists($targetFile)) {
             $composeFile = $targetFile;
-            break 2; // Выходим сразу из обоих циклов, файл найден!
+            break 2; // Выходим сразу из обоих циклов
         }
     }
     
